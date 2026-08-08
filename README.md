@@ -2,7 +2,7 @@
 
 <p align="center">
 
-  <img src="doc/Fig1.png" alt="XGB-ToxPredict Architecture" width="900">
+  <img src="doc/Fig.1.png" alt="XGB-ToxPredict Architecture" width="900">
 
 </p>
 
