@@ -1,5 +1,11 @@
 # XGB-ToxPredict
 
+<p align="center">
+
+  <img src="doc/Fig1.png" alt="XGB-ToxPredict Architecture" width="900">
+
+</p>
+
 XGB-ToxPredict is an XGBoost-based machine learning pipeline for predicting treatment-related toxicity in patients with hepatocellular carcinoma (HCC). The framework adopts a hierarchical two-stage classification strategy that first identifies patients at risk of developing any toxicity and then stratifies those patients according to toxicity severity.
 The pipeline consists of two sequential models:
 * Model 1 (M1): Any Toxicity Prediction – Predicts whether a patient will experience treatment-related toxicity (Grade > 0) using the complete patient cohort.
