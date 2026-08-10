@@ -15,64 +15,119 @@ This cascaded design decomposes toxicity prediction into two clinically meaningf
 
 
 
-
 # XGB-ToxPredict
 
-Two-stage XGBoost pipeline for screening treatment-related toxicity:
-
+```{=html}
+<p align="center">
 ```
-Patients
-   |
-   v
-M1: Any toxicity (Grade > 0)?  --No-->  Negative (Grade < 3)
-   |Yes
-   v
-M2: Severe toxicity (Grade >= 3)?  --No-->  Negative (Grade < 3)
-   |Yes
-   v
-Positive (Grade >= 3)
-
-
-python pre_process.py --config_path path/to/config.yaml
-
-
-
-## Repository layout
-
+`<img src="doc/Fig.1.png" alt="XGB-ToxPredict Architecture" width="900">`{=html}
+```{=html}
+</p>
 ```
-common/
-  config.py     - YAML config loading (one copy, was three)
-  data.py       - dataset loading, feature/target split
-  metrics.py    - ECE, threshold metrics, cascade metrics
-  plotting.py   - ROC/PR/calibration/confusion-matrix/SHAP plots
-  xgb_stage.py  - single-stage XGBoost: CV + final model fit + SHAP
-stages/
-  train.py      - trains one stage: `python -m stages.train --config configs/m1.yaml`
-  test.py       - evaluates one stage on its held-out test set
-hierarchical/
-  predict.py    - runs the M1 -> M2 cascade end-to-end (the flowchart above)
-configs/
-  m1.yaml, m2.yaml, hierarchical.yaml
-M1/, M2/        - per-stage datasets + trained models (xgb_final_model.joblib)
-dataset/        - dataset for the hierarchical cascade evaluation
+**XGB-ToxPredict** is an open-source XGBoost-based machine learning
+pipeline for predicting **treatment-related toxicity in patients with
+hepatocellular carcinoma (HCC)**.
+
+The framework adopts a **hierarchical two-stage classification
+strategy** that first predicts whether a patient is likely to develop
+treatment-related toxicity and subsequently estimates the severity of
+toxicity.
+
+## Pipeline Overview
+
+### Model 1 (M1): Any Toxicity Prediction
+
+-   Negative class: **Grade = 0**
+-   Positive class: **Grade \> 0**
+
+### Model 2 (M2): Severe Toxicity Prediction
+
+-   Negative class: **Grade 1--2**
+-   Positive class: **Grade ≥ 3**
+
+## Features
+
+-   XGBoost-based classification
+-   Hierarchical two-stage prediction
+-   Automated preprocessing
+-   Configurable feature selection
+-   Cross-validation
+-   Probability calibration
+-   Automatic threshold optimization
+-   ROC, PR and calibration curves
+-   Confusion matrix
+-   SHAP explainability
+-   YAML configuration
+-   Reproducible experiments
+
+## Installation
+
+### Clone
+
+``` bash
+git clone https://github.com/<username>/XGB-ToxPredict.git
+cd XGB-ToxPredict
 ```
 
-## Usage
+### Create environment
 
-```bash
+``` bash
+conda create -n xgb-toxpredict python=3.9 -y
+conda activate xgb-toxpredict
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-
-# Train each stage independently
-python -m stages.train --config configs/m1.yaml
-python -m stages.train --config configs/m2.yaml
-
-# Evaluate each stage on its own held-out test set
-python -m stages.test --config configs/m1.yaml
-python -m stages.test --config configs/m2.yaml
-
-# Run the full M1 -> M2 cascade
-python -m hierarchical.predict --config configs/hierarchical.yaml
 ```
 
+## Data Preprocessing
 
+``` bash
+cd Pre-process
+python pre_process.py
+```
+
+or
+
+``` bash
+python pre_process.py --config_path config/config.yaml
+```
+
+## Training
+
+``` bash
+python train.py --config_path configs/m1.yaml
+python train.py --config_path configs/m2.yaml
+```
+
+## Testing
+
+``` bash
+python test.py --config_path configs/m1.yaml
+python test.py --config_path configs/m2.yaml
+```
+
+## Output
+
+The pipeline generates:
+
+-   ROC curve
+-   Precision--Recall curve
+-   Calibration curve
+-   Confusion matrix
+-   Excel report with predictions and metrics
+-   Feature importance
+-   SHAP plots
+
+## License
+
+MIT License.
+
+## Citation
+
+Citation information will be added after publication.
+
+## Contact
+
+**Falah Jabar**
+
+University Hospital of North Norway (UNN)
 
