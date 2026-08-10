@@ -207,7 +207,7 @@ After preprocessing and preparing the datasets for **M1** and **M2**, the models
 python -m stages.train --config configs/m1.yaml
 ```
 
-This trains the M1 model to predict **whether a patient will develop treatment-related toxicity (Grade > 0)**.
+This trains the M1 model to predict **whether a patient will develop treatment-related toxicity (Grade > 0)**. Results:```xgb-toxpredict/M1/Prediction_results/```
 
 ---
 
@@ -217,7 +217,7 @@ This trains the M1 model to predict **whether a patient will develop treatment-r
 python -m stages.train --config configs/m2.yaml
 ```
 
-This trains the M2 model using only patients with toxicity (Grades 1–5) to predict **severe toxicity (Grade ≥ 3)**.
+This trains the M2 model using only patients with toxicity (Grades 1–5) to predict **severe toxicity (Grade ≥ 3)**.  Results:```xgb-toxpredict/M2/Prediction_results/```
 
 ---
 
