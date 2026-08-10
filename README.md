@@ -6,9 +6,9 @@
 
 </p>
 
-<p align="justify">
+<p style="text-align: justify;">
 
-<strong>XGB-ToxPredict</strong> is an open-source XGBoost-based machine learning pipeline for hierarchical binary classification. The framework decomposes complex prediction problems into sequential decision stages, enabling independent training, optimization, calibration, and evaluation of each model. While the repository is demonstrated using treatment-related toxicity prediction in patients with hepatocellular carcinoma (HCC), the pipeline is designed to be general and can be readily adapted to other hierarchical binary classification tasks by modifying the input datasets and configuration files.
+<strong>XGB-ToxPredict</strong> is an open-source XGBoost-based machine learning pipeline for hierarchical binary classification. The framework decomposes complex prediction problems into sequential decision stages, enabling each model to be trained, optimized, calibrated, and evaluated independently. Although the repository is demonstrated using treatment-related toxicity prediction in patients with hepatocellular carcinoma (HCC), its modular architecture is designed to be general and can be readily adapted to other hierarchical binary classification tasks by modifying the input datasets and configuration files.
 
 </p>
 
