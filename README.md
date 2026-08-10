@@ -15,7 +15,7 @@ This cascaded design decomposes toxicity prediction into two clinically meaningf
 
 
 
-## Installation
+### Installation
 
 ### Clone
 
@@ -300,33 +300,6 @@ The final output provides a hierarchical prediction for every patient in the inp
 **Note:** Unlike Model 2 training, which uses only patients with toxicity (Grades 1–5), the hierarchical prediction pipeline always accepts a dataset containing **all patients**, allowing the two models to operate sequentially as they would in clinical practice.
 
 
-
-
-## Training
-
-``` bash
-python train.py --config_path configs/m1.yaml
-python train.py --config_path configs/m2.yaml
-```
-
-## Testing
-
-``` bash
-python test.py --config_path configs/m1.yaml
-python test.py --config_path configs/m2.yaml
-```
-
-## Output
-
-The pipeline generates:
-
--   ROC curve
--   Precision--Recall curve
--   Calibration curve
--   Confusion matrix
--   Excel report with predictions and metrics
--   Feature importance
--   SHAP plots
 
 ## License
 
