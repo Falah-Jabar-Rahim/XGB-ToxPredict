@@ -9,3 +9,4 @@ scipy
 joblib
 openpyxl
 PyYAML
+xlsxwriter
