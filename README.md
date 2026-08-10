@@ -25,21 +25,6 @@ This cascaded design decomposes toxicity prediction into two clinically meaningf
 -   Negative class: **Grade < 3**
 -   Positive class: **Grade ≥ 3**
 
-## Features
-
--   XGBoost-based classification
--   Hierarchical two-stage prediction
--   Automated preprocessing
--   Configurable feature selection
--   Cross-validation
--   Probability calibration
--   Automatic threshold optimization
--   ROC, PR and calibration curves
--   Confusion matrix
--   SHAP explainability
--   YAML configuration
--   Reproducible experiments
-
 ## Installation
 
 ### Clone
