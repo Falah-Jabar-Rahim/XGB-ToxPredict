@@ -13,7 +13,7 @@ XGB-ToxPredict is an open-source XGBoost-based machine learning pipeline for hie
 ### Clone
 
 ``` bash
-git clone https://github.com/<username>/XGB-ToxPredict.git
+git clone https://github.com/Falah-Jabar-Rahim/XGB-ToxPredict.git
 cd XGB-ToxPredict
 ```
 
