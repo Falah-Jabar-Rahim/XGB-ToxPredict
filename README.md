@@ -47,13 +47,7 @@ pip install -r requirements.txt
 
 ``` bash
 cd Pre-process
-python pre_process.py
-```
-
-or
-
-``` bash
-python pre_process.py --config_path config/config.yaml
+python pre_process.py --config_path config/config_pre.yaml
 ```
 
 ## Training
