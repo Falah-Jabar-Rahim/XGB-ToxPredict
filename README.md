@@ -9,8 +9,8 @@
 <p align="justify">
   
 XGB-ToxPredict is an open-source XGBoost-based machine learning pipeline for hierarchical binary classification. The framework decomposes complex prediction problems into sequential decision stages, enabling independent training, optimization, and evaluation of each model. Although the repository is demonstrated for treatment-related toxicity prediction in hepatocellular carcinoma (HCC), the pipeline is generic and can be readily adapted to other hierarchical binary classification tasks by modifying the input datasets and configuration files.
-</p>
 
+</p>
 
 ### Installation
 
