@@ -1,0 +1,90 @@
+# ==============================================================================
+# Author: Falah Jabar
+# Affiliation: University Hospital of North Norway (UNN)
+# Project: Machine Learning-Based Toxicity Prediction
+#
+# Stage M1: "Any toxicity" screen (Grade > 0 vs Grade == 0).
+# See the pipeline flowchart: M1 is the first cascade stage in
+# hierarchical/predict.py.
+# ==============================================================================
+
+experiment:
+  random_seed: 42
+  prediction_output_dir: "M1/Prediction_results/train"
+  # Directory for trained models, metrics, ROC/PR curves, SHAP values,
+  # calibration plots, confusion matrices, and exported predictions.
+
+data:
+  data_path_clean: "M1/dataset/train.xlsx"
+  # Pre-cleaned dataset: missing-value imputation, feature encoding, and
+  # normalization already applied. (Renamed from "data_path_celan" - typo
+  # in the original config key.)
+
+  id_col: "ID"
+  target_col: "Grade≥3"
+  # 0 = Negative (no toxicity), 1 = Positive (any toxicity, Grade > 0)
+
+  drop_feature_enable: false
+  # If true, the xgboost.drop_feature list below is excluded before training.
+
+models:
+  xgboost:
+    drop_feature:
+      - "number_nodules"
+      - "extrahepatic_spread"
+      - "smoking_status"
+      - "BCLC"
+      - "PS"
+      - "cirrhosis"
+      - "diabetes"
+      - "portal_vein_thrombosis"
+      - "ascites"
+      - "antibiotics"
+      - "encephalopathy"
+
+    params:
+      n_estimators: 500
+      learning_rate: 0.02
+      max_depth: 3
+      subsample: 0.6
+      colsample_bytree: 0.7
+      reg_lambda: 2
+      reg_alpha: 2
+      min_child_weight: 10
+      gamma: 1
+      n_jobs: -1
+      eval_metric: "aucpr"
+      random_state: 42
+
+training:
+  cv:
+    n_splits: 5
+    shuffle: true
+    random_state: 42
+
+evaluation:
+  ece:
+    n_bins: 12
+    strategy: "uniform"
+
+  prob_thr: 0.5
+  xgboost_model_path: "M1/Prediction_results/train/xgb_final_model.joblib"
+  test_dataset_path: "M1/dataset/test.xlsx"
+
+  do_calibration: false
+  calib_method: "sigmoid"          # sigmoid (Platt) | isotonic
+  find_best_thr: true
+  metric: "f1"                     # f1 | youden
+  thr_min: 0.30
+  thr_max: 0.70
+  thr_step: 0.01
+
+  bootstrap:
+    B: 1000
+    random_state: 42
+
+plots:
+  figsize: [7, 6]
+  dpi: 600
+  class_names: ["Negative", "Positive"]
+  axis_fontsize: 12

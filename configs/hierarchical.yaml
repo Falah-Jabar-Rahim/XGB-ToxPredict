@@ -1,0 +1,59 @@
+# ==============================================================================
+# Author: Falah Jabar
+# Affiliation: University Hospital of North Norway (UNN)
+# Project: Machine Learning-Based Toxicity Prediction
+#
+# Hierarchical M1 -> M2 cascade. Requires both stages to already be trained
+# (python -m stages.train --config configs/m1.yaml / m2.yaml).
+#
+# NOTE: this dataset uses its own target column name ("Grade\u22653irAE"),
+# distinct from M2's own dataset ("Grade\u22653ADVEVENT") - both were present
+# in the original repo and are kept as-is here. Confirm this is intentional
+# (same underlying severe-toxicity definition, different cohort/column name)
+# before trusting the cascade's reported metrics.
+# ==============================================================================
+
+experiment:
+  random_seed: 42
+  prediction_output_dir: "Prediction_results"
+
+data:
+  id_col: "ID"
+  target_col: "Grade≥3"
+  # This MUST be the FINAL cascade label: 0 = Grade<3, 1 = Grade>=3.
+  drop_feature_enable: false
+
+models:
+  xgboost:
+    drop_feature:
+      - "number_nodules"
+      - "extrahepatic_spread"
+      - "smoking_status"
+      - "BCLC"
+      - "PS"
+      - "cirrhosis"
+      - "diabetes"
+      - "portal_vein_thrombosis"
+      - "ascites"
+      - "antibiotics"
+      - "encephalopathy"
+
+evaluation:
+  ece:
+    n_bins: 5
+    strategy: "uniform"
+
+  prob_thr: 0.5
+  xgboost_model_path_m1: "M1/Prediction_results/train/xgb_final_model.joblib"
+  xgboost_model_path_m2: "M2/Prediction_results/train/xgb_final_model.joblib"
+  test_dataset_path: "dataset/test.xlsx"
+
+  bootstrap:
+    B: 1000
+    random_state: 42
+
+plots:
+  figsize: [7, 6]
+  dpi: 600
+  class_names: ["Negative", "Positive"]
+  axis_fontsize: 12

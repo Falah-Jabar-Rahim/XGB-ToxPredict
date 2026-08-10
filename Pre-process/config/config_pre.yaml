@@ -1,0 +1,245 @@
+# ==============================================================================
+# Author: Falah Jabar
+# Affiliation: University Hospital of North Norway (UNN)
+# Project: Machine Learning–Based Toxicity Prediction
+#
+# Description:
+# Configuration file for the data preprocessing pipeline. This file defines
+# dataset information, preprocessing parameters, missing-value imputation
+# settings, feature transformations, correlation analysis, and visualization
+# options. All preprocessing experiments can be reproduced by modifying only
+# this configuration file.
+# ==============================================================================
+
+# =========================
+# Experiment configuration
+# =========================
+experiment:
+  random_seed: 42
+  # Integer ≥ 0
+  # Global random seed used throughout the pipeline to ensure reproducible
+  # preprocessing, imputation, and any randomized operations.
+
+  pre_process_output_dir: "Data_explatory"
+  # Output directory where all preprocessing results will be saved,
+  # including cleaned datasets, figures, statistics, and reports.
+
+# =========================
+# Dataset configuration
+# =========================
+data:
+  data_path: "dataset/example.xlsx"
+  # Path to the input clinical dataset (Excel/CSV) used for preprocessing.
+
+  id_col: "ID"
+  # Column containing unique patient identifiers.
+  # Used only for tracking patients and excluded from model training.
+
+  target_col: "Grade≥3"
+  # Binary outcome variable to be predicted.
+  # Expected values are typically 0 (No toxicity) and 1 (Toxicity).
+
+  categorical_cols: ["aetiology"]
+  # Features treated as categorical variables.
+  # These columns will be encoded before machine learning.
+
+  int_cols:
+  # Features expected to contain integer-valued measurements.
+  #
+  # These variables are preserved as integers after preprocessing and
+  # imputation. Continuous variables should NOT be included here.
+  #
+  # Typical examples include:
+  #   - Binary variables (0/1)
+  #   - Clinical scores
+  #   - Disease stages
+  #   - Ordinal variables
+  #   - Count variables
+  #
+  # After imputation, decimal values are automatically rounded and converted
+  # back to integers.
+  - "sex"
+  - "smoking_status"
+  - "PS"
+  - "aetiology"
+  - "cirrhosis"
+  - "diabetes"
+  - "ascites"
+  - "encephalopathy"
+  - "CP_score"
+  - "number_nodules"
+  - "portal_vein_thrombosis"
+  - "BCLC"
+  - "antibiotics"
+  - "steroids"
+  - "Beta_blockers"
+  - "alt"
+  - "alp"
+  - "wcc"
+  - "hbg"
+  - "neu"
+  - "lym"
+  - "plt"
+  - "albi_grade"
+
+  corr_threshold: 0.9
+  # Correlation threshold used to identify highly correlated feature pairs.
+  # Features exceeding this threshold may be reported or removed to reduce
+  # redundancy and multicollinearity.
+
+  corr_method: "pearson"
+  # Correlation method used when computing feature correlations.
+  # Pearson measures linear relationships, while Spearman measures monotonic
+  # relationships based on rank.
+
+# =========================
+# Preprocessing parameters
+# =========================
+preprocessing:
+
+  log_transform:
+    enabled: false
+    # Apply log(x + 1) transformation to skewed numerical features.
+    # Useful for reducing the effect of extreme values.
+
+    exclude_from_log: ["sex", "Grade≥3"]
+    # Features excluded from logarithmic transformation because they are
+    # categorical, binary, ordinal, or already appropriately scaled.
+
+  imputation:
+
+    eval_enabled: false
+    # Enables imputation benchmarking by masking known values,
+    # performing imputation, and comparing recovered values with the
+    # original observations.
+
+    imp_method: "MissForest"
+    # Missing-value imputation algorithm.
+    # Available methods:
+    #   - MissForest: Random Forest–based iterative imputation
+    #   - MICE: Multiple Imputation by Chained Equations
+
+    drop_missing: 0.5
+    # Maximum acceptable proportion of missing values per patient.
+    # Patients with more than this fraction of missing variables
+    # will be excluded before imputation.
+
+    eps: 0.1
+    # Small offset used when converting inequality values such as
+    # "<5" or ">100" into numeric values.
+
+    MissForest:
+
+      rf:
+        n_estimators: 100
+        # Number of trees used in each Random Forest model.
+
+        criterion: "squared_error"
+        # Split criterion used during tree construction.
+
+        max_depth: null
+        # Maximum depth of each decision tree.
+        # Null allows trees to grow until stopping criteria are met.
+
+        min_samples_split: 2
+        # Minimum number of samples required before splitting a node.
+
+        min_samples_leaf: 1
+        # Minimum number of samples required in each terminal leaf.
+
+        min_weight_fraction_leaf: 0.0
+        # Minimum weighted fraction required in a leaf node.
+
+        max_features: 1.0
+        # Fraction of input features randomly selected at each split.
+
+        max_leaf_nodes: null
+        # Maximum number of terminal leaf nodes.
+
+        min_impurity_decrease: 0.0
+        # Minimum impurity reduction required before splitting.
+
+        bootstrap: true
+        # Whether bootstrap sampling is used when building trees.
+
+        oob_score: false
+        # Enable out-of-bag performance estimation.
+
+        n_jobs: -1
+        # Number of CPU cores used (-1 uses all available cores).
+
+        random_state: use_experiment_seed
+        # Uses the experiment random seed for reproducibility.
+
+        verbose: 0
+        # Controls logging during training.
+
+        warm_start: false
+        # Reuse previously trained trees when increasing n_estimators.
+
+      iterative_imputer:
+        max_iter: 10
+        # Number of complete iterative imputation cycles.
+
+        initial_strategy: "median"
+        # Initial strategy used before iterative estimation begins.
+
+        random_state: use_experiment_seed
+        # Random seed controlling iterative imputation.
+
+    mice:
+
+      estimator: null
+      # Base regression model used for chained equations.
+      # Null defaults to Bayesian Ridge Regression.
+
+      max_iter: 50
+      # Maximum number of MICE iterations.
+
+      tol: 0.001
+      # Convergence tolerance.
+
+      random_state: 0
+      # Random seed.
+
+      imputation_order: "ascending"
+      # Order in which variables are imputed.
+
+      initial_strategy: "median"
+      # Initial fill method before iterative regression.
+
+      n_nearest_features: 30
+      # Number of predictor variables used for each regression model.
+
+      sample_posterior: false
+      # Sample from the posterior distribution for multiple imputation.
+
+      min_value: 0
+      # Minimum allowable imputed value.
+
+      max_value: null
+      # Maximum allowable imputed value.
+
+      add_indicator: false
+      # Add binary indicators identifying originally missing values.
+
+      preserve_observed: true
+      # Preserve original observed values and modify only missing entries.
+
+# =========================
+# Plotting configuration
+# =========================
+plots:
+
+  figsize: [7, 6]
+  # Figure size in inches (width × height).
+
+  dpi: 600
+  # Output figure resolution suitable for publication.
+
+  axis_fontsize: 12
+  # Font size used for axis labels and tick labels.
+
+# ==============================================================================
+# End of configuration
+# ==============================================================================
