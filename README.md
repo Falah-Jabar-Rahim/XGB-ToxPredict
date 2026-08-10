@@ -14,6 +14,25 @@ The pipeline consists of two sequential models:
 This cascaded design decomposes toxicity prediction into two clinically meaningful binary classification tasks, improving interpretability while allowing independent optimization of each prediction stage.
 
 
+
+## Installation
+
+### Clone
+
+``` bash
+git clone https://github.com/<username>/XGB-ToxPredict.git
+cd XGB-ToxPredict
+```
+
+### Create environment
+
+``` bash
+conda create -n xgb-toxpredict python=3.9 -y
+conda activate xgb-toxpredict
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
 # Data Pre-processing
 
 Before training the machine learning models, the clinical dataset must be cleaned and pre-processed.
@@ -115,45 +134,173 @@ patient_imputed_final_MissForest.xlsx
 
 This file contains the processed dataset and should be used as the input for training and evaluating the XGB-ToxPredict models.
 
+# Preparing the Model Datasets
 
+After preprocessing, two datasets should be created for the hierarchical prediction pipeline.
 
+## M1: Any Toxicity Prediction
 
-## Pipeline Overview
+Model 1 is trained and tested using **all patients**.
 
-### Model 1 (M1): Any Toxicity Prediction
+The target variable should be defined as:
 
--   Negative class: **Grade = 0**
--   Positive class: **Grade \> 0**
+| Toxicity Grade | M1 Target |
+|---------------:|:---------:|
+| Grade 0 | 0 |
+| Grades 1–5 | 1 |
 
-### Model 2 (M2): Severe Toxicity Prediction
+Thus, Model 1 learns to predict whether a patient will experience **any treatment-related toxicity**.
 
--   Negative class: **Grade < 3**
--   Positive class: **Grade ≥ 3**
+The resulting dataset should contain:
 
-## Installation
+- Patient ID
+- Selected clinical features
+- Binary target (`Grade≥3`)
 
-### Clone
+Example:
+```text
+M1/dataset/train.xlsx
+M1/dataset/test.xlsx
+```
+---
 
-``` bash
-git clone https://github.com/<username>/XGB-ToxPredict.git
-cd XGB-ToxPredict
+## M2: Severe Toxicity Prediction
+
+Model 2 is trained and tested **only on patients who experienced toxicity** (Grades 1–5).
+
+Patients with **Grade 0** are excluded.
+
+The target variable is then redefined as:
+
+| Toxicity Grade | M2 Target |
+|---------------:|:---------:|
+| Grades 1–2 | 0 |
+| Grades 3–5 | 1 |
+
+Thus, Model 2 learns to distinguish between:
+
+- Mild/Moderate toxicity (Grades 1–2)
+- Severe toxicity (Grades 3–5)
+
+The resulting dataset should contain:
+
+- Patient ID
+- Selected clinical features
+- Binary target (`Grade≥3`)
+
+Example:
+```text
+M2/dataset/train.xlsx
+M2/dataset/test.xlsx
+```
+---
+
+## Dataset Summary
+
+| Model | Included Patients | Target |
+|--------|-------------------|--------|
+| **M1** | All patients | Grade 0 vs Grades 1–5 |
+| **M2** | Only patients with toxicity (Grades 1–5) | Grades 1–2 vs Grades 3–5 |
+
+The same preprocessing pipeline should be applied to both datasets to ensure consistent feature engineering and data quality.
+
+# Usage
+
+After preprocessing and preparing the datasets for **M1** and **M2**, the models can be trained and evaluated independently or used together in the hierarchical prediction pipeline.
+
+## Train M1 (Any Toxicity Prediction)
+
+```bash
+python -m stages.train --config configs/m1.yaml
 ```
 
-### Create environment
+This trains the M1 model to predict **whether a patient will develop treatment-related toxicity (Grade > 0)**.
 
-``` bash
-conda create -n xgb-toxpredict python=3.9 -y
-conda activate xgb-toxpredict
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+---
+
+## Train M2 (Severe Toxicity Prediction)
+
+```bash
+python -m stages.train --config configs/m2.yaml
 ```
 
-## Data Preprocessing
+This trains the M2 model using only patients with toxicity (Grades 1–5) to predict **severe toxicity (Grade ≥ 3)**.
 
-``` bash
-cd Pre-process
-python pre_process.py --config_path config/config_pre.yaml
+---
+
+## Evaluate M1
+
+```bash
+python -m stages.test --config configs/m1.yaml
 ```
+
+Evaluates the trained M1 model on an independent test dataset and generates:
+
+- ROC curve
+- Precision–Recall curve
+- Calibration curve
+- Confusion matrix
+- Classification metrics
+- Feature importance and SHAP visualizations
+- Patient-level predictions
+
+---
+
+## Evaluate M2
+
+```bash
+python -m stages.test --config configs/m2.yaml
+```
+
+Evaluates the trained M2 model using the corresponding independent test dataset and generates the same evaluation reports.
+
+---
+## Run the Complete Hierarchical Pipeline
+
+```bash
+python -m hierarchical.predict --config configs/hierarchical.yaml
+```
+
+The hierarchical pipeline uses a single input dataset containing **all patients**. The workflow then proceeds automatically:
+
+1. **Model 1 (M1)** predicts whether each patient is likely to develop treatment-related toxicity.
+2. Patients predicted as **No Toxicity** are assigned the final outcome **Grade 0**.
+3. Patients predicted as **Toxicity** are forwarded to **Model 2 (M2)**.
+4. **Model 2 (M2)** predicts whether toxicity is:
+   - **Grade 1–2 (Mild/Moderate Toxicity)**, or
+   - **Grade 3–5 (Severe Toxicity)**.
+
+The final output provides a hierarchical prediction for every patient in the input dataset.
+
+### Workflow
+
+```text
+                All Patients
+                     │
+                     ▼
+        ┌────────────────────────┐
+        │ Model 1                │
+        │ Any Toxicity Prediction│
+        └────────────────────────┘
+             │              │
+             │              │
+      No Toxicity      Toxicity
+       (Grade 0)            │
+             │              ▼
+             │      ┌────────────────────────┐
+             │      │ Model 2                │
+             │      │ Severe Toxicity        │
+             │      └────────────────────────┘
+             │            │
+             │            │
+             ▼            ▼
+         Grade 0     Grade 1–2 or Grade 3–5
+```
+
+**Note:** Unlike Model 2 training, which uses only patients with toxicity (Grades 1–5), the hierarchical prediction pipeline always accepts a dataset containing **all patients**, allowing the two models to operate sequentially as they would in clinical practice.
+
+
+
 
 ## Training
 
