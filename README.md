@@ -254,7 +254,7 @@ Evaluates the trained M2 model using the corresponding independent test dataset 
 python -m hierarchical.predict --config configs/hierarchical.yaml
 ```
 
-The hierarchical pipeline uses a single input dataset (```xgb-toxpredict/dataset/test.xlsx```)containing **all patients**. The workflow then proceeds automatically:
+The hierarchical pipeline uses a single input dataset (```xgb-toxpredict/dataset/test.xlsx```) containing **all patients**. The workflow then proceeds automatically:
 
 1. **Model 1 (M1)** predicts whether each patient is likely to develop treatment-related toxicity.
 2. Patients predicted as **No Toxicity** are assigned the final outcome **Grade 0**.
@@ -263,7 +263,7 @@ The hierarchical pipeline uses a single input dataset (```xgb-toxpredict/dataset
    - **Grade 1–2 (Mild/Moderate Toxicity)**, or
    - **Grade 3–5 (Severe Toxicity)**.
 
-The final output provides a hierarchical prediction for every patient in the input dataset.
+The final output (```xgb-toxpredict/Prediction_results/```) provides a hierarchical prediction for every patient in the input dataset.
 
 ### Workflow
 
