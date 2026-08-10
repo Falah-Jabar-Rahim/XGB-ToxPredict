@@ -22,7 +22,7 @@ This cascaded design decomposes toxicity prediction into two clinically meaningf
 
 ### Model 2 (M2): Severe Toxicity Prediction
 
--   Negative class: **Grade 1--2**
+-   Negative class: **Grade < 3**
 -   Positive class: **Grade ≥ 3**
 
 ## Features
