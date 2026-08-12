@@ -299,7 +299,7 @@ The final output (```xgb-toxpredict/Prediction_results/```) provides a hierarchi
 
 Citation information will be added after publication.
 
-# Contact:
+## Contact:
 
 If you have any questions or comments, please feel free to contact: falah.rahim@unn.no
 
