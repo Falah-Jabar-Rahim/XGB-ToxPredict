@@ -295,18 +295,13 @@ The final output (```xgb-toxpredict/Prediction_results/```) provides a hierarchi
 **Note:** Unlike Model 2 training, which uses only patients with toxicity (Grades 1–5), the hierarchical prediction pipeline always accepts a dataset containing **all patients**, allowing the two models to operate sequentially as they would in clinical practice.
 
 
-
-## License
-
-MIT License.
-
 ## Citation
 
 Citation information will be added after publication.
 
-## Contact
+# Contact:
 
-**Falah Jabar**
+If you have any questions or comments, please feel free to contact: falah.rahim@unn.no
 
-University Hospital of North Norway (UNN)
-
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Note: This pipeline is intended for research and AI-assisted analysis only. At this stage, the AI model provides predictions and analytical outputs, not clinical decisions.
